@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kikuyu Movie Admin Panel</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-100 text-gray-800 font-sans">
+
+  <!-- Flash Messages -->
+  <div th:if="${successMessage}" class="alert alert-success" role="alert">
+    <span th:text="${successMessage}"></span>
+  </div>
+  <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
+    <span th:text="${errorMessage}"></span>
+  </div>
+
+  <header class="bg-gray-900 text-white p-6 flex justify-between items-center shadow-lg">
+    <h1 class="text-2xl font-bold">🎬 Admin Dashboard - Kikuyu Movie Store</h1>
+    <div class="space-x-4">
+      <button onclick="document.getElementById('updatePasswordModal').classList.remove('hidden')" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-400">Update Password</button>
+      <a th:href="@{/}" class="bg-yellow-500 text-black px-4 py-2 rounded hover:bg-yellow-400">Back to Store</a>
+      <a th:href="@{/admin/logout}" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-400">Logout</a>
+    </div>
+  </header>
+
+  <div th:if="${passwordError}" class="text-center text-red-600 font-bold mt-2" th:text="${passwordError}"></div>
+  <div th:if="${passwordSuccess}" class="text-center text-green-600 font-bold mt-2" th:text="${passwordSuccess}"></div>
+
+  <div id="updatePasswordModal" class="hidden fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+    <div class="bg-white rounded-lg p-6 w-full max-w-md">
+      <h2 class="text-xl font-bold mb-4 text-gray-700">🔐 Update Admin Password</h2>
+      <form th:action="@{/admin/update-password}" method="post" class="space-y-4">
+        <div>
+          <label>Current Password</label>
+          <input type="password" name="currentPassword" class="w-full border border-gray-300 rounded px-3 py-2 mt-1" required>
+        </div>
+        <div>
+          <label>New Password</label>
+          <input type="password" name="newPassword" class="w-full border border-gray-300 rounded px-3 py-2 mt-1" required>
+        </div>
+        <div>
+          <label>Confirm Password</label>
+          <input type="password" name="confirmPassword" class="w-full border border-gray-300 rounded px-3 py-2 mt-1" required>
+        </div>
+        <div class="flex justify-between mt-4">
+          <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-400">Update</button>
+          <button type="button" onclick="document.getElementById('updatePasswordModal').classList.add('hidden')" class="bg-gray-300 px-4 py-2 rounded hover:bg-gray-200">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <section class="grid grid-cols-1 md:grid-cols-3 gap-6 p-6">
+    <div class="bg-white shadow-md rounded-lg p-4 text-center">
+      <h3 class="text-xl font-semibold">📁 Total Movies</h3>
+      <p class="text-2xl text-yellow-500 font-bold mt-2" th:text="${totalMovies}">0</p>
+    </div>
+    <div class="bg-white shadow-md rounded-lg p-4 text-center">
+      <h3 class="text-xl font-semibold">📬 Movie Requests</h3>
+      <p class="text-2xl text-green-500 font-bold mt-2" th:text="${totalRequests}">0</p>
+    </div>
+    <div class="bg-white shadow-md rounded-lg p-4 text-center">
+      <h3 class="text-xl font-semibold">👥 Users</h3>
+      <p class="text-2xl text-blue-500 font-bold mt-2" th:text="${totalUsers}">0</p>
+    </div>
+  </section>
+
+  <main class="grid grid-cols-1 lg:grid-cols-2 gap-8 p-6">
+    <!-- Add Movie Form -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <h2 class="text-2xl font-bold mb-4 text-gray-700">➕ Add New Movie</h2>
+      <form th:action="@{/admin/add-movie}" method="post" enctype="multipart/form-data" class="space-y-4">
+        <div>
+          <label>Movie Title</label>
+          <input type="text" name="title" class="w-full border border-gray-300 rounded px-3 py-2 mt-1" required>
+        </div>
+        <div>
+          <label>Movie Cover Image</label>
+          <input type="file" name="cover" class="w-full border border-gray-300 rounded px-3 py-2 mt-1 bg-white" accept="image/*" required>
+        </div>
+        <div>
+          <label>🎞️ Trailer File (optional)</label>
+          <input type="file" name="trailer" class="w-full border border-gray-300 rounded px-3 py-2 mt-1 bg-white" accept="video/*">
+        </div>
+        <div>
+          <label>📺 YouTube Trailer URL (optional)</label>
+          <input type="text" name="trailerUrl" class="w-full border border-gray-300 rounded px-3 py-2 mt-1" placeholder="e.g., https://youtube.com/watch?v=...">
+        </div>
+        <button type="submit" class="bg-yellow-500 text-black px-4 py-2 rounded hover:bg-yellow-400 font-bold">Add Movie</button>
+      </form>
+    </div>
+
+    <!-- Movie Requests -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <h2 class="text-2xl font-bold mb-4 text-gray-700">📨 User Movie Requests</h2>
+      <ul class="space-y-4 max-h-80 overflow-y-auto pr-2">
+        <li th:each="req : ${requests}" class="border-b pb-4">
+          <strong th:text="|${req.username}:|"></strong>
+          Requested <span class="text-yellow-500" th:text="|&quot;${req.requestedTitle}&quot;|"></span>
+          <span class="ml-2 font-semibold" th:text="|Status: ${req.status}|"></span>
+          <div class="mt-2 space-x-2">
+            <form th:action="@{/admin/update-request-status}" method="post" style="display:inline;">
+              <input type="hidden" name="requestId" th:value="${req.id}"/>
+              <input type="hidden" name="status" value="Available"/>
+              <button class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-400 text-sm">Mark as Available</button>
+            </form>
+            <form th:action="@{/admin/update-request-status}" method="post" style="display:inline;">
+              <input type="hidden" name="requestId" th:value="${req.id}"/>
+              <input type="hidden" name="status" value="Not Found"/>
+              <button class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-400 text-sm">Mark as Unavailable</button>
+            </form>
+            <form th:action="@{/admin/delete-request}" method="post" style="display:inline;">
+              <input type="hidden" name="requestId" th:value="${req.id}"/>
+              <button class="bg-gray-500 text-white px-3 py-1 rounded hover:bg-gray-400 text-sm">Clear</button>
+            </form>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Manage Movies -->
+    <div class="bg-white rounded-lg shadow-md p-6 col-span-2">
+      <h2 class="text-2xl font-bold mb-4 text-gray-700">🎞️ Manage Added Movies</h2>
+      <ul id="movieList" class="space-y-4 max-h-96 overflow-y-auto pr-2">
+        <li th:each="movie : ${movies}" class="flex items-center justify-between border-b pb-4">
+          <div class="flex items-center space-x-4">
+            <img th:src="@{/admin/movie/image/{id}(id=${movie.id})}" class="w-16 h-20 rounded object-cover border" alt="Movie Cover"/>
+            <span class="font-semibold text-gray-700 text-lg" th:text="${movie.title}"></span>
+          </div>
+          <div class="space-x-2">
+            <form th:action="@{/admin/edit-movie}" method="post" style="display:inline;">
+              <input type="hidden" name="movieId" th:value="${movie.id}"/>
+              <input type="text" name="newTitle" placeholder="Edit title" class="rounded px-2 py-1 text-sm"/>
+              <button class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-400 text-sm">Edit</button>
+            </form>
+            <form th:action="@{/admin/delete-movie}" method="post" style="display:inline;">
+              <input type="hidden" name="movieId" th:value="${movie.id}"/>
+              <button class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-400 text-sm">Delete</button>
+            </form>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </main>
+
+  <footer class="text-center text-sm text-gray-500 py-6 bg-gray-200 mt-6">
+    © 2025 Kikuyu Movie Store Admin Panel. All rights reserved.
+  </footer>
+</body>
+</html>

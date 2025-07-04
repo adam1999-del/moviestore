@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>User Dashboard - Kikuyu Movie Store</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-800 font-sans">
+
+  <!-- Header -->
+  <header class="bg-gray-900 text-white p-6 flex justify-between items-center shadow-lg">
+    <h1 class="text-2xl font-bold">🎬 Welcome to Kikuyu Movie Store</h1>
+    <a th:href="@{/logout}" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-400">Logout</a>
+  </header>
+
+  <!-- Movie List Section -->
+  <section class="p-6">
+    <h2 class="text-2xl font-bold mb-4 text-gray-700">📽️ Available Movies</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6" th:if="${movies != null}">
+      <div th:each="movie : ${movies}" class="bg-white shadow-md rounded-lg overflow-hidden">
+        <!-- Movie cover image from DB -->
+        <img th:src="@{/admin/movie/image/{id}(id=${movie.id})}" alt="Movie Cover" class="w-full h-48 object-cover" />
+        <div class="p-4">
+          <h3 class="font-bold text-lg" th:text="${movie.title}">Movie Title</h3>
+
+          <!-- Show trailer video if available -->
+          <video th:if="${movie.trailerData != null}" class="w-full mt-2 rounded" controls>
+            <source th:src="@{admin/movie/trailer/{id}(id=${movie.id})}" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Request Movie Section -->
+  <section class="p-6">
+    <h2 class="text-2xl font-bold mb-4 text-gray-700">🎯 Request a Movie</h2>
+    <form th:action="@{/user/request-movie}" method="post" class="space-y-4 max-w-md">
+      <div>
+        <label for="requestedTitle" class="block font-medium">Movie Title</label>
+        <input type="text" id="requestedTitle" name="requestedTitle" placeholder="Enter movie title"
+          class="w-full border border-gray-300 rounded px-3 py-2 mt-1 focus:outline-none focus:ring focus:ring-yellow-400" required>
+      </div>
+      <button type="submit"
+        class="bg-yellow-500 text-black px-4 py-2 rounded hover:bg-yellow-400 font-bold transition">Submit Request</button>
+    </form>
+  </section>
+
+  <!-- Request Status Section -->
+  <section class="p-6">
+    <h2 class="text-2xl font-bold mb-4 text-gray-700">📋 Request Status</h2>
+    <ul class="space-y-4 max-w-xl">
+      <li th:each="req : ${requests}"
+          th:classappend="${req.status == 'Available'} ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'"
+          class="border p-4 rounded-lg">
+        <span th:text="${req.status == 'Available'} ? '✅ ' : '❌ '"></span>
+        <span th:text="|${req.requestedTitle} - ${req.status}|"></span>
+      </li>
+    </ul>
+  </section>
+
+  <!-- Footer -->
+  <footer class="text-center text-sm text-gray-500 py-6 bg-gray-200 mt-6">
+    © 2025 Kikuyu Movie Store. All rights reserved.
+  </footer>
+
+</body>
+</html>
