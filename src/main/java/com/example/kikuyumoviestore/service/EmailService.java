@@ -29,7 +29,7 @@ public class EmailService {
     }
 
     public String buildNewMovieEmailContent(Movie movie) {
-        String baseUrl = "http://localhost:8080"; // Replace with actual domain if deployed
+        String baseUrl = "https://moviestore-3nd7.onrender.com"; // Replace with actual domain if deployed
 
         String trailerUrl = baseUrl + "/movie/trailer/" + movie.getId();
         String coverImageUrl = baseUrl + "/admin/movie/image/" + movie.getId();
