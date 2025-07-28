@@ -22,7 +22,7 @@ public class AdminController {
         return "admin-login";
     }
 
-    @PostMapping("/login")
+    @PostMapping("/login") 
     public String handleLogin(@RequestParam String username,
                               @RequestParam String password,
                               HttpSession session,

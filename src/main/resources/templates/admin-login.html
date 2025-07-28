@@ -3,55 +3,60 @@
 <head>
   <meta charset="UTF-8" />
   <title>Admin Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     .video-bg {
       position: fixed;
       top: 0;
       left: 0;
-      min-width: 100%;
-      min-height: 100%;
+      width: 100vw;
+      height: 100vh;
       object-fit: cover;
       z-index: -1;
     }
-    body {
-      background-color: black;
-    }
   </style>
 </head>
-<body class="flex items-center justify-center h-screen bg-black/60 backdrop-blur-sm">
+<body class="flex items-center justify-center min-h-screen bg-black/60 backdrop-blur-sm px-4">
 
   <!-- Background Video -->
-  <video autoplay muted loop class="video-bg">
+  <video autoplay muted loop playsinline class="video-bg">
     <source th:src="@{/videos/Netflix Logo Animation (2013).mp4}" type="video/mp4" />
     Your browser does not support the video tag.
   </video>
 
   <!-- Error Message -->
-  <div th:if="${error}" class="text-center text-red-500 mb-4 absolute top-4">
+  <div th:if="${error}" class="text-center text-red-500 absolute top-4 left-1/2 transform -translate-x-1/2">
     <p th:text="${error}"></p>
   </div>
 
-  <!-- Login Form with Black Bold Text -->
-  <form th:action="@{/admin/login}" method="post" class="bg-white/30 backdrop-blur-md p-8 rounded-2xl shadow-2xl w-full max-w-sm border border-white/20">
+  <!-- Modern Login Form -->
+  <form th:action="@{/admin/login}" method="post"
+    class="w-full max-w-sm bg-white/20 backdrop-blur-lg rounded-2xl shadow-2xl p-8 border border-white/30 text-black">
+    
     <h2 class="text-3xl font-bold mb-6 text-center text-black">Admin Login</h2>
 
-    <label class="block mb-4 text-black font-bold">
-      <span class="block text-sm mb-1">Username</span>
-      <input type="text" name="username"
-        class="w-full px-4 py-2 rounded bg-white/20 text-black placeholder-black font-bold focus:outline-none focus:ring-2 focus:ring-yellow-400"
-        placeholder="Enter username" required />
-    </label>
+    <!-- Username Field -->
+    <div class="mb-5">
+      <label for="username" class="block text-sm font-medium mb-1">Username</label>
+      <input type="text" id="username" name="username" placeholder="e.g. admin"
+        class="w-full px-4 py-2 text-sm rounded-lg bg-white/30 text-black placeholder-gray-700 font-medium focus:outline-none focus:ring-2 focus:ring-yellow-400 shadow-sm"
+        required />
+    </div>
 
-    <label class="block mb-6 text-black font-bold">
-      <span class="block text-sm mb-1">Password</span>
-      <input type="password" name="password"
-        class="w-full px-4 py-2 rounded bg-white/20 text-black placeholder-black font-bold focus:outline-none focus:ring-2 focus:ring-yellow-400"
-        placeholder="Enter password" required />
-    </label>
+    <!-- Password Field -->
+    <div class="mb-6">
+      <label for="password" class="block text-sm font-medium mb-1">Password</label>
+      <input type="password" id="password" name="password" placeholder="Enter secure password"
+        class="w-full px-4 py-2 text-sm rounded-lg bg-white/30 text-black placeholder-gray-700 font-medium focus:outline-none focus:ring-2 focus:ring-yellow-400 shadow-sm"
+        required />
+    </div>
 
-    <button
-      class="bg-yellow-500 hover:bg-yellow-400 w-full py-2 rounded font-bold text-black transition duration-300">Login</button>
+    <!-- Login Button -->
+    <button type="submit"
+      class="w-full bg-yellow-500 hover:bg-yellow-400 text-black font-bold py-2 rounded-lg transition duration-300 shadow-md">
+      Login
+    </button>
   </form>
 
 </body>
